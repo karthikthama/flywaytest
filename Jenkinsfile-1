@@ -1,0 +1,18 @@
+pipeline {
+    agent any 
+    environment {
+        DB_CREDS=credentials('db-creds')
+    }
+    stages {
+        stage ('verfiy version') {
+            steps {
+                sh 'docker run --rm flyway/flyway'
+            }
+        }
+        stage ('migrate') {
+            steps {
+                sh 'docker run --rm -v $WORKSPACE/my-repo-db:/flyway/my-repo-db -v $WORKSPACE/conf:/flyway/conf flyway/flyway -user=$DB_CREDS_USR -password=$DB_CREDS_PSW migrate'
+            }
+        } 
+    }
+}
